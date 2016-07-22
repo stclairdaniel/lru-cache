@@ -36,16 +36,18 @@ class HashMap
   end
 
   def each
-    
+    @store.each do |list|
+      list.each { |link| yield(link.key, link.val) }
+    end
   end
 
   # uncomment when you have Enumerable included
-  # def to_s
-  #   pairs = inject([]) do |strs, (k, v)|
-  #     strs << "#{k.to_s} => #{v.to_s}"
-  #   end
-  #   "{\n" + pairs.join(",\n") + "\n}"
-  # end
+  def to_s
+    pairs = inject([]) do |strs, (k, v)|
+      strs << "#{k.to_s} => #{v.to_s}"
+    end
+    "{\n" + pairs.join(",\n") + "\n}"
+  end
 
   alias_method :[], :get
   alias_method :[]=, :set
@@ -57,6 +59,14 @@ class HashMap
   end
 
   def resize!
+    lists = @store.dup
+    new_array = Array.new(num_buckets * 2) { LinkedList.new }
+    lists.each do |list|
+      list.each do |link|
+        new_array[link.key.hash % (num_buckets * 2)].insert(link.key, link.val)
+      end
+    end
+    @store = new_array
   end
 
   def bucket(key)
