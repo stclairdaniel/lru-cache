@@ -45,14 +45,9 @@ class LinkedList
   end
 
   def get(key)
-    check_link = @head.next
-    check_key = check_link.key
-    until check_key == key
-      break if check_link == @tail
-      check_link = check_link.next
-      check_key = check_link.key
+    self.each do |link|
+      return link.val if link.key == key
     end
-    check_link.val
   end
 
   def include?(key)
@@ -69,6 +64,8 @@ class LinkedList
       new_link.prev = @tail.prev
       new_link.next = @tail
       @tail.prev= new_link
+    else
+      self.each { |link| link.val = val if link.key == key }
     end
   end
 

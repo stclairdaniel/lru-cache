@@ -14,13 +14,14 @@ class LRUCache
     @map.count
   end
 
-  def get(key, &prc)
-    unless @store.include?(key)
-      calc!(key, &prc)
+  def get(key)
+    if @map.include?(key)
+      update_link!(key)
     else
-      update_link!(@store[key])
+      eject! if count == @max
+      calc!(key)
     end
-    eject! unless count < @max
+    @map[key].val
   end
 
   def to_s
@@ -29,18 +30,17 @@ class LRUCache
 
   private
 
-  def calc!(key, &prc)
+  def calc!(key)
     # suggested helper method; insert an (un-cached) key
-    unless @store.include?(key)
-      # block_given?  ? yielded = prc.call(key) : @store.get(key)
-      @store.insert(key, yield(key))
-      @map[key] = yield(key)
-    end
+    val = @prc.call(key)
+    @store.insert(key, val)
+    @map[key] = @store.last
   end
 
   def update_link!(key)
-    @store.remove(key)
-    @store.insert(key, @store.get(key))
+    link = @map.get(key)
+    @store.remove(link.key)
+    @store.insert(link.key, link.val)
   end
 
   def eject!
@@ -48,4 +48,5 @@ class LRUCache
     @store.remove(lru_key)
     @map.delete(lru_key)
   end
+
 end

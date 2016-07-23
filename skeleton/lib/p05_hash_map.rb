@@ -37,7 +37,7 @@ class HashMap
 
   def each
     @store.each do |list|
-      list.each { |link| yield(link.key, link.val) }
+      list.each { |link| yield(link) }
     end
   end
 
