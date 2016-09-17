@@ -31,7 +31,7 @@ class LRUCache
   private
 
   def calc!(key)
-    # suggested helper method; insert an (un-cached) key
+    # insert an (un-cached) key
     val = @prc.call(key)
     @store.insert(key, val)
     @map[key] = @store.last
